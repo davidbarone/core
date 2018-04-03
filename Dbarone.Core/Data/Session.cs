@@ -358,7 +358,7 @@ namespace Dbarone.Data
 
                 while (schema_reader.Read())
                     // Only return columns in the output (ignore internal join columns not in SELECT)
-                    if ((bool)schema_reader["IsHidden"]==false)
+                    if (schema_reader["IsHidden"] == null || (bool)schema_reader["IsHidden"]==false)
                         yield return hydrater.GetHashTable(schema_reader);
             }
         }

@@ -255,9 +255,9 @@ namespace Dbarone.Schedule
             if (nextDate.Date == startDate.Date && nextDateTime == null)
             {
                 // if the next date is same as start date
-                // and no time match, get the next date
+                // and no time match, get the next date (without time)
                 // on schedule
-                nextDate = GetDate(nextDate.AddDays(1));
+                nextDate = GetDate(nextDate.AddDays(1).Date);
                 nextDateTime = GetDateTime(nextDate);
             }
 
