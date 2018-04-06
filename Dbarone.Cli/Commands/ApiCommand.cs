@@ -13,20 +13,31 @@ namespace Dbarone.Cli.Commands
     {
         public override string Execute()
         {
-            if (string.IsNullOrEmpty(Host) && !Port.HasValue)
+            if (string.IsNullOrEmpty(Host) && string.IsNullOrEmpty(IPAddress) && !Port.HasValue)
             {
                 //return current API
                 return string.Format(@"Current api endpoint:
 Host: {0}
-Port: {1}", Properties.Settings.Default["host"], Properties.Settings.Default["port"]);
+IP Address: {1}
+Port: {2}", Properties.Settings.Default["host"], Properties.Settings.Default["ip"], Properties.Settings.Default["port"]);
             } else 
             {
-                // Set host / port
+                if (!string.IsNullOrEmpty(IPAddress))
+                    Host = null;
+
                 if (!string.IsNullOrEmpty(Host))
+                    IPAddress = null;
+
+                // Set host / port
+                if (!string.IsNullOrEmpty(Host) || !string.IsNullOrEmpty(IPAddress))
+                {
                     Properties.Settings.Default["host"] = Host;
+                    Properties.Settings.Default["ip"] = IPAddress;
+                }
                 if (Port.HasValue)
                     Properties.Settings.Default["port"] = Port;
                 Properties.Settings.Default.Save();
+
                 return "API endpoint set.";
             }
         }

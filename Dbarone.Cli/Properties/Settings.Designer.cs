@@ -46,5 +46,17 @@ namespace Dbarone.Cli.Properties {
                 this["port"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ip {
+            get {
+                return ((string)(this["ip"]));
+            }
+            set {
+                this["ip"] = value;
+            }
+        }
     }
 }

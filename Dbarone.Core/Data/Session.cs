@@ -355,10 +355,15 @@ namespace Dbarone.Data
             {
                 //var sc = reader.GetSchemaTable();
                 var schema_reader = reader.GetSchemaTable().CreateDataReader();
+                bool hasIsHidden = false;
+
+                for (int i = 0; i < schema_reader.FieldCount; i++)
+                    if (schema_reader.GetName(i).Equals("IsHidden", StringComparison.OrdinalIgnoreCase))
+                        hasIsHidden = true;
 
                 while (schema_reader.Read())
                     // Only return columns in the output (ignore internal join columns not in SELECT)
-                    if (schema_reader["IsHidden"] == null || (bool)schema_reader["IsHidden"]==false)
+                    if (!hasIsHidden || schema_reader["IsHidden"] == null || (bool)schema_reader["IsHidden"]==false)
                         yield return hydrater.GetHashTable(schema_reader);
             }
         }

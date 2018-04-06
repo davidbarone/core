@@ -15,6 +15,9 @@ namespace Dbarone.Service.Commands
     [Documentation("Sets the current API endpoint. If no parameters specified, then displays the current API endpoint.")]
     public class ApiCommand : AbstractServiceCommand
     {
+        [Option("i", "host", Help = "The IP address of the API end point.", Required = false)]
+        public string IPAddress { get; set; }
+
         [Option("h", "host", Help = "The host name of the API end point.", Required = false)]
         public string Host { get; set; }
 

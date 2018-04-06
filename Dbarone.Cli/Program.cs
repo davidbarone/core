@@ -42,11 +42,19 @@ namespace Dbarone.Cli
             else
             {
                 string host = (string)Properties.Settings.Default["host"];
+                string ip = (string)Properties.Settings.Default["ip"];
                 int port = (int)Properties.Settings.Default["port"];
 
                 // must be processed on server.
                 TcpClient client = new TcpClient();
-                IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(host), port);
+                // If host name used, get the ip address
+                if (!string.IsNullOrEmpty(host))
+                {
+                    var hostEntry = Dns.GetHostEntry(host);
+                    if (hostEntry.AddressList.Length > 0)
+                        ip = hostEntry.AddressList[0].MapToIPv4().ToString();
+                }
+                IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
                 client.Connect(serverEndPoint);
 
                 // Ensure the client does not close when there is 
