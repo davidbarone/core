@@ -1,4 +1,5 @@
-﻿using Dbarone.Core;
+﻿using Dbarone.Command;
+using Dbarone.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dbarone.Cli
+namespace Dbarone.Client
 {
     class Program
     {
@@ -34,27 +35,34 @@ namespace Dbarone.Cli
 
             // Look to see what local / library commands there are.
             var command = ArgsCommand.Create(args);
-            if (command != null)
+            if (command != null && args[0].Equals("api", StringComparison.OrdinalIgnoreCase))
+            {
                 // Generally, the only command processed locally by the
                 // cli is 'api'. This sets the service end point. All
                 // other commands are processed on the server
                 Console.Write(command.Execute());
+            }
             else
             {
                 string host = (string)Properties.Settings.Default["host"];
-                string ip = (string)Properties.Settings.Default["ip"];
                 int port = (int)Properties.Settings.Default["port"];
 
                 // must be processed on server.
                 TcpClient client = new TcpClient();
-                // If host name used, get the ip address
-                if (!string.IsNullOrEmpty(host))
+
+                // Parse the host value. Can be host name or IPv4 address.
+                IPAddress addr = null;
+                if (!IPAddress.TryParse(host, out addr))
                 {
+                    // if failed, try dns lookup
                     var hostEntry = Dns.GetHostEntry(host);
                     if (hostEntry.AddressList.Length > 0)
-                        ip = hostEntry.AddressList[0].MapToIPv4().ToString();
+                        addr = hostEntry.AddressList[0].MapToIPv4();
+                    else
+                        throw new Exception("Invalid host.");
                 }
-                IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+
+                IPEndPoint serverEndPoint = new IPEndPoint(addr, port);
                 client.Connect(serverEndPoint);
 
                 // Ensure the client does not close when there is 

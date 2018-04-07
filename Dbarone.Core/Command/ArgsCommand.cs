@@ -5,13 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Dbarone.Core;
 
-namespace Dbarone.Core
+namespace Dbarone.Command
 {
     /// <summary>
     /// Represents a command that can be invoked or hydrated from command argument string.
     /// </summary>
-    public abstract class ArgsCommand : MarshalByRefObject
+    public abstract class ArgsCommand : MarshalByRefObject, ICommand
     {
         public static List<Type> commands = new List<Type>();
 
@@ -53,13 +54,21 @@ namespace Dbarone.Core
             return concrete;
         }
 
+        /// <summary>
+        /// Build up register of all commands inheriting from ArgsCommand.
+        /// </summary>
         static ArgsCommand()
         {
             // Cache all ArgsCommand objects
-            foreach (var type in Assembly.GetEntryAssembly().GetTypes().Where(t => typeof(ArgsCommand).IsAssignableFrom(t)))
-            {
+            var commandTypes = AppDomain.CurrentDomain.GetSubclassTypesOf<ArgsCommand>()
+                .Where(t => !t.IsAbstract);
+/*
+            var commandTypes = Assembly.GetEntryAssembly().GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(ArgsCommand)))
+                .Where(t => !t.IsAbstract);
+*/
+            foreach (var type in commandTypes)
                 commands.Add(type);
-            }
         }
     }
 }

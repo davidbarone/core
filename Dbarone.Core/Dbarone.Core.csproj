@@ -46,10 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\OptionHydrator.cs" />
-    <Compile Include="Core\OptionAttribute.cs" />
+    <Compile Include="Command\ICommand.cs" />
+    <Compile Include="Command\OptionHydrator.cs" />
+    <Compile Include="Command\OptionAttribute.cs" />
     <Compile Include="Core\Extensions.cs" />
-    <Compile Include="Core\ArgsCommand.cs" />
+    <Compile Include="Command\ArgsCommand.cs" />
     <Compile Include="Data\CrudOperation.cs" />
     <Compile Include="Data\Hydrater.cs" />
     <Compile Include="Data\ISession.cs" />
@@ -82,11 +83,9 @@
     <Compile Include="Repository\XmlRepository.cs" />
     <Compile Include="Schedule\Cron.cs" />
     <Compile Include="Security\CustomPrincipal.cs" />
-    <Compile Include="Service\AbstractServiceBackgroundCommand.cs" />
-    <Compile Include="Service\AbstractServiceCommand.cs" />
-    <Compile Include="Service\ApiCommand.cs" />
-    <Compile Include="Service\NameCommand.cs" />
-    <Compile Include="Service\HelpCommand.cs" />
+    <Compile Include="Server\ApiCommand.cs" />
+    <Compile Include="Server\NameCommand.cs" />
+    <Compile Include="Server\HelpCommand.cs" />
     <Compile Include="Template\Template.cs" />
     <Compile Include="Validation\MethodValidatorAttribute.cs" />
     <Compile Include="Validation\NotNullValidatorAttribute.cs" />

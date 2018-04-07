@@ -6,33 +6,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dbarone.Cli.Commands
+namespace Dbarone.Client.Commands
 {
     [Documentation("Sets the current API endpoint. If no parameters specified, then displays the current API endpoint.")]
-    public class ApiCommand : Dbarone.Service.Commands.ApiCommand
+    public class ApiCommand : Dbarone.Server.ApiCommand
     {
         public override string Execute()
         {
-            if (string.IsNullOrEmpty(Host) && string.IsNullOrEmpty(IPAddress) && !Port.HasValue)
+            if (string.IsNullOrEmpty(Host) && !Port.HasValue)
             {
                 //return current API
                 return string.Format(@"Current api endpoint:
 Host: {0}
-IP Address: {1}
-Port: {2}", Properties.Settings.Default["host"], Properties.Settings.Default["ip"], Properties.Settings.Default["port"]);
+Port: {1}", Properties.Settings.Default["host"], Properties.Settings.Default["port"]);
             } else 
             {
-                if (!string.IsNullOrEmpty(IPAddress))
-                    Host = null;
-
-                if (!string.IsNullOrEmpty(Host))
-                    IPAddress = null;
-
                 // Set host / port
-                if (!string.IsNullOrEmpty(Host) || !string.IsNullOrEmpty(IPAddress))
+                if (!string.IsNullOrEmpty(Host))
                 {
                     Properties.Settings.Default["host"] = Host;
-                    Properties.Settings.Default["ip"] = IPAddress;
                 }
                 if (Port.HasValue)
                     Properties.Settings.Default["port"] = Port;

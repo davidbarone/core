@@ -1,6 +1,6 @@
-﻿using Dbarone.Core;
+﻿using Dbarone.Command;
+using Dbarone.Core;
 using Dbarone.Documentation;
-using Dbarone.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +10,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Dbarone.Core.ExtensionMethods;
 
-namespace Dbarone.Service.Commands
+namespace Dbarone.Server
 {
     [Documentation("Returns the name of the service currently connected to.")]
-    public class NameCommand : AbstractServiceCommand
+    public class NameCommand : ArgsCommand
     {
         public override string Execute()
         {

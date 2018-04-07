@@ -1,4 +1,5 @@
-﻿using Dbarone.Core;
+﻿using Dbarone.Command;
+using Dbarone.Core;
 using Dbarone.Ioc;
 using System;
 using System.Collections.Generic;
@@ -14,40 +15,45 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dbarone.Service
+namespace Dbarone.Server
 {
     /// <summary>
     /// Provides functionality to run a TcpServer application.
     /// This server can be accessed by the standard Dbarone
     /// Client program.
     /// </summary>
-    class TcpServer
+    public class TcpServer
     {
         private TcpListener tcpListener;
         private Thread listenThread;
-        private List<Type> commands = new List<Type>();
         private IContainer Container = null;
         private string Name;
+        private volatile bool interrupted = false;
 
         public TcpServer(string name, int port, IContainer container = null)
         {
             this.Name = name;
             this.Container = container;
-
-            // Cache the service commands available
-            foreach (var type in AppDomain.CurrentDomain.GetTypesImplementing(typeof(AbstractServiceCommand)).Values)
-                commands.Add(type);
-
             this.tcpListener = new TcpListener(IPAddress.Any, port);
             this.listenThread = new Thread(new ThreadStart(ListenForClients));
+        }
+
+        public void Start()
+        {
+            interrupted = false;
             this.listenThread.Start();
+        }
+
+        public void Stop()
+        {
+            interrupted = true;
         }
 
         private void ListenForClients()
         {
             this.tcpListener.Start();
 
-            while (true)
+            while (!interrupted)
             {
                 //blocks until a client has connected to the server
                 TcpClient client = this.tcpListener.AcceptTcpClient();
@@ -127,19 +133,8 @@ namespace Dbarone.Service
                 if (args.Length == 0)
                     args = new string[] { "help" };
 
-                // Command always the first argument.
-                var commandStr = args[0];
-
-                // Remaining elemenets are arguments for the command.
-                var arguments = args.Splice(1);
-
-                Type type = commands.FirstOrDefault(t => t.Name.Equals(string.Format("{0}Command", commandStr), StringComparison.OrdinalIgnoreCase));
-                if (type == null)
-                    throw new Exception(string.Format("Command {0} does not exist.", commandStr));
-
-                AbstractServiceCommand command = (AbstractServiceCommand)Activator.CreateInstance(type);
+                var command = ArgsCommand.Create(args);
                 command.Container = this.Container;
-                OptionHydrator.Hydrate(arguments, command);
                 return command.Execute();
             }
             catch (Exception ex)

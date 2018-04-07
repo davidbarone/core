@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dbarone.Core
+namespace Dbarone.Command
 {
     /// <summary>
     /// Attribute to define a property to accept a command line argument.

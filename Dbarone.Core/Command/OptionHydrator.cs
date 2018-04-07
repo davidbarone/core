@@ -5,8 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Dbarone.Core;
 
-namespace Dbarone.Core
+namespace Dbarone.Command
 {
     /// <summary>
     /// Takes a set of command line arguments, and

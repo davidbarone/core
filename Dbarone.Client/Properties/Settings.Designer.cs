@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Dbarone.Cli.Properties {
+namespace Dbarone.Client.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -44,18 +44,6 @@ namespace Dbarone.Cli.Properties {
             }
             set {
                 this["port"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ip {
-            get {
-                return ((string)(this["ip"]));
-            }
-            set {
-                this["ip"] = value;
             }
         }
     }

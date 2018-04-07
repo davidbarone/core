@@ -500,6 +500,24 @@ namespace Dbarone.Core
             return types;
         }
 
+        public static IEnumerable<Type> GetSubclassTypesOf<T>(this AppDomain domain)
+        {
+            List<Type> types = new List<Type>();
+
+            // Get all the command types:
+            foreach (var assembly in domain.GetAssemblies())
+            {
+                try
+                {
+                    foreach (var type in assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(T))))
+                        types.Add(type);
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                }
+            }
+            return types;
+        }
 
         #endregion
 

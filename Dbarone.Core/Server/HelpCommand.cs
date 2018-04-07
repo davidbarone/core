@@ -1,6 +1,6 @@
-﻿using Dbarone.Core;
+﻿using Dbarone.Command;
+using Dbarone.Core;
 using Dbarone.Documentation;
-using Dbarone.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +10,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Dbarone.Core.ExtensionMethods;
 
-namespace Dbarone.Service.Commands
+namespace Dbarone.Server
 {
     [Documentation("Provides help for the service application.")]
-    public class HelpCommand : AbstractServiceCommand
+    public class HelpCommand : ArgsCommand
     {
-        private IDictionary<string, Type> types;
+        private IEnumerable<Type> types;
 
         [Option("c", "command", Required = false, Help = "The command to provide extended help for.")]
         public string Command { get; set; }
@@ -23,7 +23,7 @@ namespace Dbarone.Service.Commands
         public HelpCommand()
         {
             // Get list of available commands
-            types = AppDomain.CurrentDomain.GetTypesImplementing(typeof(AbstractServiceCommand));
+            types = AppDomain.CurrentDomain.GetSubclassTypesOf<ArgsCommand>();
         }
 
         public override string Execute()
@@ -37,10 +37,10 @@ namespace Dbarone.Service.Commands
         private string Help()
         {
             var model = types
-                .OrderBy(t => t.Key)
+                .OrderBy(t => t.Name)
                 .Select(t => new {
-                    Name = t.Key,
-                    Description = ((DocumentationAttribute)t.Value.GetCustomAttribute(typeof(DocumentationAttribute))).Description
+                    Name = t.Name.Replace("Command",""),
+                    Description = ((DocumentationAttribute)t.GetCustomAttribute(typeof(DocumentationAttribute))).Description
                 });
 
             return string.Format(@"Usage: cli COMMAND [ARGUMENTS]
@@ -82,10 +82,11 @@ Run 'cli help -c <command>' for more help on a specific command. For bug request
         private string HelpForCommand()
         {
             var command = Command.ToLower();
-            if (!types.ContainsKey(command))
+            var type = types.FirstOrDefault(t => t.Name.Replace("Command", "").Equals(command, StringComparison.OrdinalIgnoreCase));
+
+            if (type==null)
                 throw new Exception(string.Format("No help exists for [{0}].", command));
 
-            var type = types[Command];
             var description = ((DocumentationAttribute)type.GetCustomAttribute(typeof(DocumentationAttribute))).Description;
 
             // Get options for the type
