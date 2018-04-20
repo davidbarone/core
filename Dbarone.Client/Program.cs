@@ -49,6 +49,7 @@ namespace Dbarone.Client
 
                 // must be processed on server.
                 TcpClient client = new TcpClient();
+                //client.Client.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
 
                 // Parse the host value. Can be host name or IPv4 address.
                 IPAddress addr = null;
@@ -56,9 +57,16 @@ namespace Dbarone.Client
                 {
                     // if failed, try dns lookup
                     var hostEntry = Dns.GetHostEntry(host);
-                    if (hostEntry.AddressList.Length > 0)
-                        addr = hostEntry.AddressList[0].MapToIPv4();
-                    else
+                    foreach (var item in hostEntry.AddressList)
+                    {
+                        // Get the first IPv4 address.
+                        if (item.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            addr = item;
+                            break;
+                        }
+                    }
+                    if (addr == null)
                         throw new Exception("Invalid host.");
                 }
 

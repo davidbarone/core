@@ -35,6 +35,7 @@ namespace Dbarone.Server
             this.Name = name;
             this.Container = container;
             this.tcpListener = new TcpListener(IPAddress.Any, port);
+            //this.tcpListener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
             this.listenThread = new Thread(new ThreadStart(ListenForClients));
         }
 
