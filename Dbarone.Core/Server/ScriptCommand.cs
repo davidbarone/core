@@ -15,7 +15,7 @@ namespace Dbarone.Server
     [Documentation("Runs a script of commands.")]
     public class ScriptCommand : ArgsCommand
     {
-        [Option("f", "file", Required = false, Help = "Full path file name.")]
+        [Option("f", "file", Required = true, Help = "Full path file name.")]
         public string File { get; set; }
 
         public override string Execute()

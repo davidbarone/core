@@ -42,18 +42,21 @@ namespace Dbarone.Client
             // service end point, and the SCRIPT command runs a
             // script of commands. All other commands are processed
             // on the server
-            if (command != null && args[0].Equals("api", StringComparison.OrdinalIgnoreCase))
+            if (args[0].Equals("api", StringComparison.OrdinalIgnoreCase))
             {
                 return command.Execute();
             }
-            else if (command != null && args[0].Equals("api", StringComparison.OrdinalIgnoreCase))
+            else if (args[0].Equals("script", StringComparison.OrdinalIgnoreCase))
             {
                 var script = command.Execute();
                 var lines = Regex.Split(script, "\r\n|\r|\n");
                 string output = "";
                 foreach (var line in lines)
                 {
-                    output += ProcessMessage(line.ParseArgs()) + Environment.NewLine;
+                    var l = line.Trim();
+                    if (l.Length>0 && l.Substring(0, 1) != "#") {
+                        output += ProcessMessage(line.ParseArgs()) + Environment.NewLine;
+                    }
                 }
                 return output;
             }

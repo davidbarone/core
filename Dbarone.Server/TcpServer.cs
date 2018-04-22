@@ -135,6 +135,10 @@ namespace Dbarone.Server
                     args = new string[] { "help" };
 
                 var command = ArgsCommand.Create(args);
+
+                if (command==null)
+                    throw new Exception("Invalid command. Use 'cli help' for more information on how to use this service.");
+
                 command.Container = this.Container;
                 return command.Execute();
             }
