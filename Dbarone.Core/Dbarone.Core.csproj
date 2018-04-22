@@ -84,6 +84,7 @@
     <Compile Include="Schedule\Cron.cs" />
     <Compile Include="Security\CustomPrincipal.cs" />
     <Compile Include="Server\ApiCommand.cs" />
+    <Compile Include="Server\ScriptCommand.cs" />
     <Compile Include="Server\NameCommand.cs" />
     <Compile Include="Server\HelpCommand.cs" />
     <Compile Include="Template\Template.cs" />

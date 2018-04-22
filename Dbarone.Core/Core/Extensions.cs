@@ -38,8 +38,7 @@ namespace Dbarone.Core
         }
 
         #endregion
-
-
+        
         #region Arrays
 
         public class PrettyPrintColumn

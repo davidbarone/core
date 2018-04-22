@@ -9,6 +9,7 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Dbarone.Client
@@ -19,7 +20,7 @@ namespace Dbarone.Client
         {
             try
             {
-                ProcessMessage(args);
+                Console.Write(ProcessMessage(args));
             }
             catch(Exception ex)
             {
@@ -27,7 +28,7 @@ namespace Dbarone.Client
             }
         }
 
-        static void ProcessMessage(string[] args)
+        static string ProcessMessage(string[] args)
         {
             // If no arguments supplied, default to show help.
             if (args.Count()==0)
@@ -35,15 +36,30 @@ namespace Dbarone.Client
 
             // Look to see what local / library commands there are.
             var command = ArgsCommand.Create(args);
+
+            // Generally, the only commands processed locally by the
+            // cli are 'api' and 'script'. The API command sets the
+            // service end point, and the SCRIPT command runs a
+            // script of commands. All other commands are processed
+            // on the server
             if (command != null && args[0].Equals("api", StringComparison.OrdinalIgnoreCase))
             {
-                // Generally, the only command processed locally by the
-                // cli is 'api'. This sets the service end point. All
-                // other commands are processed on the server
-                Console.Write(command.Execute());
+                return command.Execute();
+            }
+            else if (command != null && args[0].Equals("api", StringComparison.OrdinalIgnoreCase))
+            {
+                var script = command.Execute();
+                var lines = Regex.Split(script, "\r\n|\r|\n");
+                string output = "";
+                foreach (var line in lines)
+                {
+                    output += ProcessMessage(line.ParseArgs()) + Environment.NewLine;
+                }
+                return output;
             }
             else
             {
+                string result = string.Empty;
                 string host = (string)Properties.Settings.Default["host"];
                 int port = (int)Properties.Settings.Default["port"];
 
@@ -120,15 +136,15 @@ namespace Dbarone.Client
                     }
 
                     ASCIIEncoding encoder = new ASCIIEncoding();
-                    var result = encoder.GetString(message, 0, bytesRead);
-                    Console.Write(result);
+                    result += encoder.GetString(message, 0, bytesRead);
                     if (bytesRead < 4096)
                         break;
                 }
 
-
                 // Close the client connection.
                 authStream.Close();
+
+                return result;
             }
         }
     }
