@@ -21,5 +21,10 @@ namespace Dbarone.Validation
         /// The parent object being validated
         /// </summary>
         public object Target { get; set; }
+
+        /// <summary>
+        /// The type of the validation result.
+        /// </summary>
+        public ValidationResultType ResultType { get; set; }
     }
 }

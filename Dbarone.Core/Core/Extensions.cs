@@ -37,8 +37,17 @@ namespace Dbarone.Core
             return (T)obj;
         }
 
+        public static object XmlStringToObject(this string str, Type type)
+        {
+            XmlSerializer serializer = new XmlSerializer(type);
+            StreamReader reader = new StreamReader(str.ToStream());
+            var obj = serializer.Deserialize(reader);
+            reader.Close();
+            return obj;
+        }
+
         #endregion
-        
+
         #region Arrays
 
         public class PrettyPrintColumn
@@ -126,7 +135,8 @@ namespace Dbarone.Core
 
                 // Single object - iterate properties
                 Hashtable ht = new Hashtable();
-                foreach (var property in t.GetProperties())
+                // loop through properties (excluding IEnumerables (which we can't really pretty print)
+                foreach (var property in t.GetProperties().Where(p=> !typeof(IEnumerable).IsAssignableFrom(p.PropertyType) || p.PropertyType==typeof(string)))
                     ht[property.Name] = (property.GetValue(source) ?? string.Empty).ToString().WordWrap(valueWidth).ToList();
 
                 foreach (var key in ht.Keys)

@@ -54,6 +54,7 @@
     <Compile Include="Data\CrudOperation.cs" />
     <Compile Include="Data\Hydrater.cs" />
     <Compile Include="Data\ISession.cs" />
+    <Compile Include="Data\ReferencesAttribute.cs" />
     <Compile Include="Documentation\DocumentationAttribute.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogEventArgs.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Validation\StringLengthValidatorAttribute.cs" />
     <Compile Include="Validation\ValidationManager.cs" />
     <Compile Include="Validation\ValidationResult.cs" />
+    <Compile Include="Validation\ValidationResultType.cs" />
     <Compile Include="Validation\ValidatorAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
