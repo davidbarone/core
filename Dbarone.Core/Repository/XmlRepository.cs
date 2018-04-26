@@ -309,5 +309,13 @@ namespace Dbarone.Repository
                 return File.GetLastWriteTime(file);
             }
         }
+
+        public void Critical(Action<IRepository> action)
+        {
+            lock (lockObject)
+            {
+                action(this);
+            }
+        }
     }
 }

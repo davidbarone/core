@@ -21,5 +21,6 @@ namespace Dbarone.Repository
         void Upsert<T>(T item);
         DateTime Created<T>(T item);
         DateTime Updated<T>(T item);
+        void Critical(Action<IRepository> action);
     }
 }
