@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Dbarone.Ioc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
-namespace Dbarone.Lake.Svc.Server
+namespace Dbarone.Server
 {
     /// <summary>
     /// The HttpServer class provides a general query interface
@@ -17,57 +19,43 @@ namespace Dbarone.Lake.Svc.Server
     /// </summary>
     public class HttpServer
     {
-        public void WorkerThread()
+        HttpListener Listener = new HttpListener();
+        IContainer Container = null;
+        public WebCommand Command = null;
+
+        public HttpServer(int port, WebCommand command, IContainer container = null)
         {
+            this.Container = container;
+            this.Command = command;
+
+            // Create a listener.
+            Listener.Prefixes.Add(string.Format("http://*:{0}/", port));
 
             if (!HttpListener.IsSupported)
             {
                 Console.WriteLine("Windows XP SP2 or Server 2003 is required to use the HttpListener class.");
                 return;
             }
-            // URI prefixes are required,
-            // for example "http://contoso.com:8080/index/".
-            /*
-            if (prefixes == null || prefixes.Length == 0)
-                throw new ArgumentException("prefixes");
-            */
 
-            // Create a listener.
-            HttpListener listener = new HttpListener();
-            listener.Prefixes.Add("http://*:8080/");
+            // start worker thread
 
-            // Add the prefixes.
-            /*
-            foreach (string s in prefixes)
-            {
-                listener.Prefixes.Add(s);
-            }
-            */
-
-            listener.Start();
-
-            while (true)
-            {
-                HttpListenerContext context = listener.GetContext();
-                HttpListenerRequest request = context.Request;
-                // Obtain a response object.
-                HttpListenerResponse response = context.Response;
-                response.AddHeader("Content-Type", "application/json");
-                // Construct a response.
-                string responseString = @"[{""Customer"": ""Fred"", ""Sales"": 100}, {""Customer"": ""John"", ""Sales"": 400}, {""Customer"": ""Peter"", ""Sales"": 300}, {""Customer"": ""Simon"", ""Sales"": 200}]";
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                // Get a response stream and write the response to it.
-                response.ContentLength64 = buffer.Length;
-                System.IO.Stream output = response.OutputStream;
-                output.Write(buffer, 0, buffer.Length);
-                // You must close the output stream.
-                output.Close();
-            }
         }
 
-        public HttpServer()
+        public void Start()
         {
-            Thread clientThread = new Thread(new ThreadStart(WorkerThread));
+            Thread clientThread = new Thread(new ThreadStart(delegate()
+            {
+                Listener.Start();
+
+                while (true)
+                {
+                    HttpListenerContext context = Listener.GetContext();
+
+                    Command.Context = context;
+                    Command.Container = Container;
+                    Command.Execute();
+                }
+            }));
             clientThread.Start();
         }
     }
