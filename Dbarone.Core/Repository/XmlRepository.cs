@@ -21,6 +21,17 @@ namespace Dbarone.Repository
             public PropertyInfo Parent { get; set; }
         }
 
+        /// <summary>
+        /// Used by GetParents() method. Holds the local value of the column
+        /// as well as the parent object referred to.
+        /// </summary>
+        private class RelationValues
+        {
+            public Relation Relation { get; set; }
+            public object ChildValue { get; set; }
+            public object Parent { get; set; }
+        }
+
         private static object lockObject = new Object();
         private static Dictionary<Type, List<object>> database = new Dictionary<Type, List<object>>();
         private IEnumerable<Relation> relations = new List<Relation>();
@@ -125,13 +136,18 @@ namespace Dbarone.Repository
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private IDictionary<string, object> GetParents<T>(object obj)
+        private IEnumerable<RelationValues> GetParents<T>(object obj)
         {
-            Dictionary<string, object> results = new Dictionary<string, object>();
+            IList<RelationValues> results = new List<RelationValues>();
             foreach (var relation in relations.Where(r => r.Child.DeclaringType == typeof(T))){
                 var value = relation.Child.GetValue(obj);
                 var parent = this.Find(relation.Parent.DeclaringType, value);
-                results.Add(relation.Child.Name, parent);
+                results.Add(new RelationValues()
+                {
+                    Relation = relation,
+                    ChildValue = value,
+                    Parent = parent
+                });
             }
             return results;
         }
@@ -162,10 +178,11 @@ namespace Dbarone.Repository
 
         private void AssertForeignKeys<T>(object item)
         {
-            // Invalid foreign keys
-            var invalidFK = GetParents<T>(item).Where(r => r.Value == null);
+            // Invalid foreign keys - where the child member has a non null value, but when
+            // resolved to a parent object, the parent object is null (i.e. no match).
+            var invalidFK = GetParents<T>(item).Where(r => r.ChildValue!=null && r.Parent==null);
             if (invalidFK.Any())
-                throw new Exception(string.Format("Column [{0}] contains a value which violates referential integrity.", invalidFK.First().Key));
+                throw new Exception(string.Format("Column [{0}] contains a value which violates referential integrity.", invalidFK.First().Relation.Child.Name));
         }
 
         public void Create<T>(T item)
