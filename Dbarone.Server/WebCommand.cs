@@ -10,11 +10,13 @@ using System.Web;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.IO;
+using Dbarone.Template;
 
 namespace Dbarone.Server
 {
     /// <summary>
-    /// Base / abstract class for all web controllers
+    /// Base / abstract class for all web controllers.
     /// </summary>
     public abstract class WebCommand : ICommand
     {
@@ -45,7 +47,7 @@ namespace Dbarone.Server
                     foreach (var type in assembly.GetTypes().Where(t => typeof(WebCommand).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract))
                     {
                         WebCommand cmd = (WebCommand)Activator.CreateInstance(type);
-                        Regex r = new Regex(cmd.Route,RegexOptions.IgnoreCase);
+                        Regex r = new Regex(cmd.Route, RegexOptions.IgnoreCase);
                         if (r.IsMatch(localPath))
                             return cmd;
                     }
@@ -56,5 +58,29 @@ namespace Dbarone.Server
             }
             throw new Exception("No WebCommand object found to handle http request path.");
         }
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Writes text content to response.
+        /// </summary>
+        /// <param name="content"></param>
+        protected void WriteContent(string content)
+        {
+            using (var sw = new StreamWriter(Context.Response.OutputStream))
+            {
+                sw.Write(content);
+                sw.Flush();
+            }
+        }
+
+        protected void RenderView(string viewPath, object model)
+        {
+            var viewHtml = File.OpenText(viewPath).ReadToEnd();
+            WriteContent(new RegexTemplater().Render(viewHtml, model));
+        }
+
+        #endregion
+
     }
 }

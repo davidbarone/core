@@ -88,6 +88,7 @@
     <Compile Include="Server\ScriptCommand.cs" />
     <Compile Include="Server\NameCommand.cs" />
     <Compile Include="Server\HelpCommand.cs" />
+    <Compile Include="Template\RegexTemplater.cs" />
     <Compile Include="Template\Template.cs" />
     <Compile Include="Validation\MethodValidatorAttribute.cs" />
     <Compile Include="Validation\NotNullValidatorAttribute.cs" />
