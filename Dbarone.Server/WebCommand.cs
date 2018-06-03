@@ -80,6 +80,16 @@ namespace Dbarone.Server
             WriteContent(new RegexTemplater().Render(viewHtml, model));
         }
 
+        protected void RenderView(string viewPath, string layoutPath, object model)
+        {
+            var viewHtml = File.OpenText(viewPath).ReadToEnd();
+            var content = new RegexTemplater().Render(viewHtml, model);
+
+            var layoutHtml = File.OpenText(layoutPath).ReadToEnd();
+            content = new RegexTemplater().Render(layoutHtml, new { Content = content });
+            WriteContent(content);
+        }
+
         #endregion
 
     }

@@ -547,7 +547,7 @@ namespace Dbarone.Core
             {
                 try
                 {
-                    MethodInfo mi = typeof(T).GetMethod("Parse");
+                    MethodInfo mi = typeof(T).GetMethod("Parse", new[] { typeof(string) });
                     if (mi != null)
                     {
                         var del = (ParseDelegate<T>)Delegate.CreateDelegate(typeof(ParseDelegate<T>), mi);
@@ -556,7 +556,7 @@ namespace Dbarone.Core
                     else
                         throw new ApplicationException("Type does not support the Parse method.");
                 }
-                catch { return null; }
+                catch (Exception ex) { return null; }
             }
         }
 
