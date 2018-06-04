@@ -50,7 +50,7 @@ namespace Dbarone.Template
                     return loopedText;
                 }
                 else
-                    return iterator;    // leave text unchanged
+                    return string.Empty;    // empty string
             });
 
             // simple expansion of variables

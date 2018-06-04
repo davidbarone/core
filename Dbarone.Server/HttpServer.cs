@@ -31,6 +31,10 @@ namespace Dbarone.Server
             _ready = new ManualResetEvent(false);
             _listener = new HttpListener();
             _listenerThread = new Thread(HandleRequests);
+
+            // Specify Negotiate as the authentication scheme.
+            _listener.AuthenticationSchemes = AuthenticationSchemes.IntegratedWindowsAuthentication;
+
         }
 
         public void Start(int port)
@@ -99,7 +103,15 @@ namespace Dbarone.Server
                     }
                 }
 
-                try { ProcessRequest(context); }
+                try {
+
+                    // Process request using impersonation
+                    //var identity = (System.Security.Principal.WindowsIdentity)context.User.Identity;
+                    //using (System.Security.Principal.WindowsImpersonationContext wic = identity.Impersonate())
+                    //{
+                        ProcessRequest(context);
+                    //}
+                }
                 catch (Exception e) { Console.Error.WriteLine(e); }
             }
         }
