@@ -33,13 +33,13 @@ namespace Dbarone.Server
             _listenerThread = new Thread(HandleRequests);
 
             // Specify Negotiate as the authentication scheme.
-            _listener.AuthenticationSchemes = AuthenticationSchemes.IntegratedWindowsAuthentication;
-
+            //_listener.AuthenticationSchemes = AuthenticationSchemes.IntegratedWindowsAuthentication;
+            _listener.AuthenticationSchemes = AuthenticationSchemes.Ntlm;
         }
 
         public void Start(int port)
         {
-            _listener.Prefixes.Add(String.Format(@"http://+:{0}/", port));
+            _listener.Prefixes.Add(String.Format(@"http://*:{0}/", port));
             _listener.Start();
             _listenerThread.Start();
 

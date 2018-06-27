@@ -112,7 +112,7 @@ namespace Dbarone.Template
                 if (variables.TryGetValue(key, out val))
                     return val.ToString();
                 else
-                    return key;
+                    return "";  // If variable not present, put empty string in template.
             });
             return result;
         }

@@ -90,6 +90,16 @@ namespace Dbarone.Server
             WriteContent(content);
         }
 
+        /// <summary>
+        /// Gets the application directory. Useful when opening static files like views.
+        /// </summary>
+        public string AppDir
+        {
+            get
+            {
+                return new System.IO.FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName;
+            }
+        }
         #endregion
 
     }
