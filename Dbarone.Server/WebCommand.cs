@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.IO;
 using Dbarone.Template;
+using Newtonsoft.Json;
 
 namespace Dbarone.Server
 {
@@ -100,6 +101,21 @@ namespace Dbarone.Server
                 return new System.IO.FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName;
             }
         }
+
+        /// <summary>
+        /// Writes json object to output stream.
+        /// </summary>
+        /// <param name="obj"></param>
+        public void Json(object obj)
+        {
+            Context.Response.AddHeader("Content-Type", "application/json");
+            StreamWriter sw = new StreamWriter(Context.Response.OutputStream);
+            JsonTextWriter writer = new JsonTextWriter(sw) { Formatting = Formatting.Indented };
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Serialize(writer, obj);
+            sw.Flush();
+        }
+
         #endregion
 
     }
