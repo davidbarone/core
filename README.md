@@ -1,4 +1,7 @@
 # core
+
+> NOTE: THIS REPO HAS BEEN ARCHIVED AND IS NO LONGER ACTIVELY MAINTAINED.
+
 A simple enterprise library based on .NET. The solution consists of the following projects:
 
 Dbarone.Core
